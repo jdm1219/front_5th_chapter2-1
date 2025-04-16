@@ -1,4 +1,5 @@
 import { state } from "../store/state.js";
+import calcCart from "../utils/calcCart.js";
 
 const _increaseCartItem = (productId) => {
   const productList = state.get("productList");
@@ -23,6 +24,8 @@ const _increaseCartItem = (productId) => {
 
   state.set("productList", [...productList]);
   state.set("cartList", [...cartList]);
+
+  calcCart();
 };
 
 export const handleClickAddCart = () => {
@@ -55,6 +58,8 @@ export const handleClickDecreaseButton = (event) => {
     state.set("cartList", [...cartList]);
   }
   state.set("productList", [...productList]);
+
+  calcCart();
 };
 
 export const handleClickRemoveButton = (event) => {
@@ -72,4 +77,6 @@ export const handleClickRemoveButton = (event) => {
 
   state.set("cartList", filteredCartList);
   state.set("productList", [...productList]);
+
+  calcCart();
 };

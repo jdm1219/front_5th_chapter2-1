@@ -1,26 +1,26 @@
 import { state } from "../store/state.js";
 
 function CartTotal() {
-  const container = document.createElement("div");
+  const container = Object.assign(document.createElement("div"), {
+    id: "cart-total",
+    className: "text-xl font-bold my-4",
+  });
 
   const render = () => {
     const totalPrice = state.get("totalPrice");
-    const itemTotal = state.get("itemTotal");
     const discountRate = state.get("discountRate");
-    const bonusPoint = state.get("bonusPoint");
+    const bonusPoint = Math.floor(totalPrice / 1000);
 
-    container.innerHTML = `
-    <div id="cart-total" class="text-xl font-bold my-4">
-      총액: ${Math.round(totalPrice)}원${
-        discountRate > 0
-          ? `<span class="text-green-500 ml-2">(${(discountRate * 100).toFixed(1)}% 할인 적용)</span>`
-          : ""
-      }<span id="loyalty-points" class="text-blue-500 ml-2">(포인트: ${bonusPoint})</span></div>
-    </div>
+    container.innerHTML = `총액: ${Math.round(totalPrice)}원${
+      discountRate > 0
+        ? `<span class="text-green-500 ml-2">(${(discountRate * 100).toFixed(1)}% 할인 적용)</span>`
+        : ""
+    }<span id="loyalty-points" class="text-blue-500 ml-2">(포인트: ${bonusPoint})</span></div>
     `;
   };
 
-  state.subscribe("cartList", render);
+  state.subscribe("totalPrice", render);
+  state.subscribe("discountRate", render);
 
   render();
 

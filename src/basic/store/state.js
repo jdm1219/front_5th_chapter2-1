@@ -37,43 +37,9 @@ export const state = (() => {
         return acc + itemTotal;
       }, 0);
     },
-    get totalItemCount() {
-      return this.cartList.reduce((acc, item) => acc + item.quantity, 0);
-    },
-    get discountRate() {
-      const totalAmtBeforeDisc = this.cartList.reduce((acc, item) => {
-        const product = this.productList.find((p) => p.id === item.id);
-        if (!product) return acc;
-        return acc + product.price * item.quantity;
-      }, 0);
-
-      if (totalAmtBeforeDisc === 0) return 0;
-
-      const totalAmtAfterItemDiscount = this.itemTotal;
-
-      let discRate =
-        (totalAmtBeforeDisc - totalAmtAfterItemDiscount) / totalAmtBeforeDisc;
-      if (this.totalItemCount >= BULK_AMOUNT) {
-        const bulkDiscAmount = totalAmtBeforeDisc * BULK_DISCOUNT_RATE;
-        const currentDiscAmount =
-          totalAmtBeforeDisc - totalAmtAfterItemDiscount;
-        if (bulkDiscAmount > currentDiscAmount) {
-          discRate = BULK_DISCOUNT_RATE;
-        }
-      }
-
-      const today = new Date().getDay();
-      if (today === SPECIAL_DAY) {
-        discRate = Math.max(discRate, SPECIAL_DAY_DISCOUNT_RATE);
-      }
-
-      return discRate;
-    },
-    get totalPrice() {
-      const totalBeforeBulk = this.itemTotal;
-      const bulkOrSpecialDiscount = 1 - this.discountRate; // 할인율이 통합된 상태
-      return Math.round(totalBeforeBulk * bulkOrSpecialDiscount);
-    },
+    totalPrice: 0,
+    itemCount: 0,
+    discountRate: 0,
     get bonusPoint() {
       return Math.floor(this.totalPrice / 1000);
     },

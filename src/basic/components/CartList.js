@@ -6,9 +6,10 @@ import {
 } from "../events/cartEventHandlers.js";
 
 function CartList() {
-  const container = document.createElement("div");
-  container.id = "cart-items";
-  container.className = "my-4";
+  const container = Object.assign(document.createElement("div"), {
+    id: "cart-items",
+    className: "my-4",
+  });
 
   const render = () => {
     const cartList = state.get("cartList");

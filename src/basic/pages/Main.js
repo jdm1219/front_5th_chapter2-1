@@ -1,12 +1,12 @@
 import CartList from "../components/CartList.js";
 import CartTotal from "../components/CartTotal.js";
 import ProductSelect from "../components/ProductSelect.js";
+import AddButton from "../components/AddButton.js";
 import StockInfo from "../components/StockInfo.js";
 import {
   setAdditionalDiscountInterval,
   setLightningSaleInterval,
 } from "../../utils/sale.js";
-
 function Main() {
   const root = document.getElementById("app");
 
@@ -24,6 +24,7 @@ function Main() {
     wrap.appendChild(CartList());
     wrap.appendChild(CartTotal());
     wrap.appendChild(ProductSelect());
+    wrap.appendChild(AddButton());
     wrap.appendChild(StockInfo());
   };
 
