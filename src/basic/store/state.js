@@ -90,7 +90,6 @@ export const state = (() => {
       data[key] = value;
 
       if (listeners.has(key)) {
-        console.log("sfdaadsdfasfadsfds");
         listeners.get(key).forEach((callback) => callback(value));
       }
     },

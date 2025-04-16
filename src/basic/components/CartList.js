@@ -7,19 +7,20 @@ import {
 
 function CartList() {
   const container = document.createElement("div");
+  container.id = "cart-items";
+  container.className = "my-4";
 
   const render = () => {
     const cartList = state.get("cartList");
 
-    container.innerHTML = `
-      <div id="cart-items" class="my-4">${cartList
-        .map(
-          ({
-            id,
-            name,
-            price,
-            quantity,
-          }) => `<div id="${id}" class="flex justify-between items-center mb-2">
+    container.innerHTML = `${cartList
+      .map(
+        ({
+          id,
+          name,
+          price,
+          quantity,
+        }) => `<div id="${id}" class="flex justify-between items-center mb-2">
               <span>${name} - ${price}원 x ${quantity}</span>
               <div>
                 <button class="quantity-change bg-blue-500 text-white px-2 py-1 rounded mr-1" data-product-id="${id}" data-change="-1">-</button>
@@ -28,9 +29,8 @@ function CartList() {
               </div>
             </div>
           `,
-        )
-        .join("")}
-      </div>
+      )
+      .join("")}
   `;
 
     const increaseButton = container.querySelectorAll(
