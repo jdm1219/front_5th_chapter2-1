@@ -8,11 +8,16 @@ import React, {
 } from "react";
 
 import type { Product } from "../types";
+import {
+  setAdditionalDiscountInterval,
+  setLightningSaleInterval,
+} from "../utils/sale";
 
 interface ProductsContextType {
   products: Product[];
   updateQuantity: (id: string, delta: number) => void;
-  lastSelectedRef: React.RefObject<string | null>;
+  lastSelectedItemId?: string;
+  setLastSelectedItemId: (id: string) => void;
 }
 
 const ProductsContext = createContext<ProductsContextType | undefined>(
@@ -33,7 +38,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
     { id: "p4", name: "상품4", price: 15000, quantity: 0 },
     { id: "p5", name: "상품5", price: 25000, quantity: 10 },
   ]);
-  const lastSelectedRef = useRef<string | null>(null);
+  const [lastSelectedItemId, setLastSelectedItemId] = useState<string>();
 
   const updateQuantity = (id: string, delta: number) => {
     setProducts((prev) =>
@@ -43,21 +48,19 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
     );
   };
 
-  // useEffect(() => {
-  //   const cleanupFlash = scheduleFlashSale(() => setProducts((p) => [...p]));
-  //   const cleanupRecommend = scheduleRecommendationSale(
-  //     () => lastSelectedRef.current,
-  //     () => setProducts((p) => [...p]),
-  //   );
-  //   return () => {
-  //     cleanupFlash();
-  //     cleanupRecommend();
-  //   };
-  // }, []);
+  useEffect(() => {
+    setLightningSaleInterval(products, setProducts);
+    setAdditionalDiscountInterval(products, setProducts, lastSelectedItemId);
+  }, []);
 
   return (
     <ProductsContext.Provider
-      value={{ products, updateQuantity, lastSelectedRef }}
+      value={{
+        products,
+        updateQuantity,
+        lastSelectedItemId,
+        setLastSelectedItemId,
+      }}
     >
       {children}
     </ProductsContext.Provider>

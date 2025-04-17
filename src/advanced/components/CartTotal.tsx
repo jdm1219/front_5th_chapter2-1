@@ -1,13 +1,14 @@
 import React from "react";
 import { useProducts } from "../contexts/ProductsContext";
+import { useCart } from "../contexts/CartContext";
+import calcCart from "../utils/calcCart";
 
 const CartTotal: React.FC = () => {
-  // TODO carts
   const { products } = useProducts();
+  const { cartItems } = useCart();
+  const { totalPrice, discountRate } = calcCart(cartItems, products);
 
-  const totalPrice = 0;
-  const discountRate = 0;
-  const bonusPoint = 0;
+  const bonusPoint = Math.floor(totalPrice / 1000);
 
   return (
     <div id="cart-total" className="text-xl font-bold my-4">

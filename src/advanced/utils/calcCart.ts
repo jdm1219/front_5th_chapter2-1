@@ -1,36 +1,30 @@
-import { state } from "../store/state.tsx";
+import { DISCOUNT_RATES } from "../constants";
+import { CartItem, Product } from "../types";
 
 const BULK_AMOUNT = 30;
 const BULK_DISCOUNT_RATE = 0.25;
 const SPECIAL_DAY = 2;
 const SPECIAL_DAY_DISCOUNT_RATE = 0.1;
 
-const getDiscountRate = (productId, quantity) => {
-  const DISCOUNT_RATES = {
-    p1: 0.1,
-    p2: 0.15,
-    p3: 0.2,
-    p4: 0.05,
-    p5: 0.25,
-  };
-
+const getDiscountRate = (
+  productId: keyof typeof DISCOUNT_RATES,
+  quantity: number,
+) => {
   if (quantity >= 10 && DISCOUNT_RATES[productId]) {
     return DISCOUNT_RATES[productId];
   }
   return 0;
 };
 
-const calcCart = () => {
+const calcCart = (cartItems: CartItem[], products: Product[]) => {
   let totalPrice = 0;
   let itemCount = 0;
 
-  const cartList = state.get("cartList");
-  console.log(cartList);
   let totalPriceBeforeDisc = 0;
-  let discRate = 0;
+  let discountRate = 0;
 
-  cartList.forEach((cartItem) => {
-    const currentItem = findProductById(cartItem.id);
+  cartItems.forEach((cartItem) => {
+    const currentItem = products.find(({ id }) => id === cartItem.id);
     if (!currentItem) return;
 
     const quantity = cartItem.quantity;
@@ -42,58 +36,53 @@ const calcCart = () => {
     totalPriceBeforeDisc += itemTotal;
   });
 
-  ({ totalPrice, discRate } = applyBulkDiscount(
+  ({ totalPrice, discountRate } = applyBulkDiscount(
     totalPrice,
     itemCount,
     totalPriceBeforeDisc,
-    discRate,
+    discountRate,
   ));
-  ({ totalPrice, discRate } = applySpecialdayDiscount(totalPrice, discRate));
-
-  state.set("totalPrice", totalPrice);
-  state.set("itemCount", itemCount);
-  state.set("discountRate", discRate);
-};
-
-const findProductById = (productId) => {
-  const productList = state.get("productList");
-  return productList.find((product) => product.id === productId);
+  ({ totalPrice, discountRate } = applySpecialdayDiscount(
+    totalPrice,
+    discountRate,
+  ));
+  return { totalPrice, discountRate };
 };
 
 const applyBulkDiscount = (
-  totalPrice,
-  itemCount,
-  totalPriceBeforeDisc,
-  discRate,
+  totalPrice: number,
+  itemCount: number,
+  totalPriceBeforeDisc: number,
+  discountRate: number,
 ) => {
-  if (totalPriceBeforeDisc === 0) return { totalPrice, discRate };
+  if (totalPriceBeforeDisc === 0) return { totalPrice, discountRate };
 
-  const calDefaultDiscRate = () =>
+  const calDefaultDiscountRate = () =>
     (totalPriceBeforeDisc - totalPrice) / totalPriceBeforeDisc;
 
-  discRate = calDefaultDiscRate();
+  discountRate = calDefaultDiscountRate();
   if (itemCount >= BULK_AMOUNT) {
     const bulkDiscountAmount = totalPriceBeforeDisc * BULK_DISCOUNT_RATE;
     const currentDiscountAmount = totalPriceBeforeDisc - totalPrice;
 
     if (bulkDiscountAmount > currentDiscountAmount) {
       totalPrice = totalPriceBeforeDisc * (1 - BULK_DISCOUNT_RATE);
-      discRate = BULK_DISCOUNT_RATE;
+      discountRate = BULK_DISCOUNT_RATE;
     }
   }
 
-  return { totalPrice, discRate };
+  return { totalPrice, discountRate };
 };
 
-const applySpecialdayDiscount = (totalPrice, discRate) => {
+const applySpecialdayDiscount = (totalPrice: number, discountRate: number) => {
   const today = new Date().getDay();
 
   if (today === SPECIAL_DAY) {
     totalPrice *= 1 - SPECIAL_DAY_DISCOUNT_RATE;
-    discRate = Math.max(discRate, SPECIAL_DAY_DISCOUNT_RATE);
+    discountRate = Math.max(discountRate, SPECIAL_DAY_DISCOUNT_RATE);
   }
 
-  return { totalPrice, discRate };
+  return { totalPrice, discountRate };
 };
 
 export default calcCart;
